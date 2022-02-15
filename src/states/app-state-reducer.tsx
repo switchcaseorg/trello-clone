@@ -1,7 +1,11 @@
 import { AppState } from "./app-state-context";
 import { Action } from "./app-state-action";
 import { nanoid } from "nanoid";
-import { overrideItemAtIndex, findItemIndexById } from "../utils/array-utils";
+import {
+  overrideItemAtIndex,
+  findItemIndexById,
+  moveItem,
+} from "../utils/array-utils";
 
 export const appStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -35,6 +39,16 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
           targetListIndex
         ),
       };
+    }
+    case "MOVE_LIST": {
+      const { dragIndex, hoverIndex } = action.payload;
+      return {
+        ...state,
+        lists: moveItem(state.lists, dragIndex, hoverIndex),
+      };
+    }
+    case "SET_DRAGGED_ITEM": {
+      return { ...state, draggedItem: action.payload };
     }
     default: {
       return state;

@@ -1,5 +1,7 @@
-import React, { createContext, useReducer, useContext } from "react";
+import React, { createContext, useContext } from "react";
 import { Action } from "./app-state-action";
+import { DragItem } from "../models/drag-item";
+
 export const AppStateContext = createContext<AppStateContextProps>(
   {} as AppStateContextProps
 );
@@ -14,6 +16,7 @@ export const useAppState = () => {
 };
 
 export const appData: AppState = {
+  draggedItem: undefined,
   lists: [
     {
       id: "0",
@@ -45,4 +48,5 @@ interface Column {
 
 export interface AppState {
   lists: Column[];
+  draggedItem: DragItem | undefined;
 }

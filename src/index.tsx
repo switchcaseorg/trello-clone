@@ -3,13 +3,16 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./app";
 import reportWebVitals from "./reportWebVitals";
-
+import { DndProvider } from "react-dnd";
+import { HTML5Backend as Backend } from "react-dnd-html5-backend";
 import { AppStateProvider } from "./states/app-state-provider";
 
 ReactDOM.render(
-  <AppStateProvider>
-    <App />
-  </AppStateProvider>,
+  <DndProvider backend={Backend}>
+    <AppStateProvider>
+      <App />
+    </AppStateProvider>
+  </DndProvider>,
   document.getElementById("root")
 );
 
