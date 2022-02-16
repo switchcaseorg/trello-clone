@@ -5,6 +5,8 @@ import {
   overrideItemAtIndex,
   findItemIndexById,
   moveItem,
+  removeItemAtIndex,
+  insertItemAtIndex,
 } from "../utils/array-utils";
 
 export const appStateReducer = (state: AppState, action: Action): AppState => {
@@ -49,6 +51,51 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "SET_DRAGGED_ITEM": {
       return { ...state, draggedItem: action.payload };
+    }
+    case "MOVE_TASK": {
+      const { dragIndex, hoverIndex, sourceColumn, targetColumn } =
+        action.payload;
+
+      const sourceListIndex = findItemIndexById(state.lists, sourceColumn);
+
+      console.log(targetColumn);
+      const targetListIndex = findItemIndexById(state.lists, targetColumn);
+
+      const sourceList = state.lists[sourceListIndex];
+      const task = sourceList.tasks[dragIndex];
+
+      const updatedSourceList = {
+        ...sourceList,
+        tasks: removeItemAtIndex(sourceList.tasks, dragIndex),
+      };
+
+      const stateWithUpdatedSourceList = {
+        ...state,
+        lists: overrideItemAtIndex(
+          state.lists,
+          updatedSourceList,
+          sourceListIndex
+        ),
+      };
+
+      console.log(stateWithUpdatedSourceList);
+      console.log(targetListIndex);
+
+      const targetList = stateWithUpdatedSourceList.lists[targetListIndex];
+
+      const updatedTargetList = {
+        ...targetList,
+        tasks: insertItemAtIndex(targetList.tasks, task, hoverIndex),
+      };
+
+      return {
+        ...stateWithUpdatedSourceList,
+        lists: overrideItemAtIndex(
+          stateWithUpdatedSourceList.lists,
+          updatedTargetList,
+          targetListIndex
+        ),
+      };
     }
     default: {
       return state;

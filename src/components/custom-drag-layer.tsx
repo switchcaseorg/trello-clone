@@ -1,6 +1,7 @@
 import { XYCoord, useDragLayer } from "react-dnd";
 import { CustomDragLayerContainer } from "../styled-components/container";
 import { Column } from "../components/column";
+import { Card } from "./card";
 
 function getItemStyles(currentOffset: XYCoord | null): React.CSSProperties {
   if (!currentOffset) {
@@ -32,12 +33,22 @@ const CustomDragLayer: React.FC = () => {
   return (
     <CustomDragLayerContainer>
       <div style={getItemStyles(currentOffset)}>
-        <Column
-          id={item.id}
-          text={item.text}
-          index={item.index}
-          isPreview={true}
-        />
+        {item.type === "COLUMN" ? (
+          <Column
+            id={item.id}
+            text={item.text}
+            index={item.index}
+            isPreview={true}
+          />
+        ) : (
+          <Card
+            columnId={item.columnId}
+            isPreview={true}
+            index={0}
+            id={item.id}
+            text={item.text}
+          />
+        )}
       </div>
     </CustomDragLayerContainer>
   );

@@ -1,23 +1,58 @@
 import { useDrop } from "react-dnd";
-import { DragItem } from "../models/drag-item";
+import { TypeEnum } from "../enums/type.enum";
+import { CardDragItem, DragItem } from "../models/drag-item";
 import { useAppState } from "../states/app-state-context";
 
-export const useItemDrop = (index: number) => {
+function dispatchForColumn(
+  item: DragItem,
+  hoverIndex: number,
+  dispatch: Function
+) {
+  const dragIndex = item.index;
+  if (dragIndex === hoverIndex) {
+    return;
+  }
+  dispatch({ type: "MOVE_LIST", payload: { dragIndex, hoverIndex } });
+}
+
+function dispatchForCard(
+  item: CardDragItem,
+  hoverIndex: number,
+  targetColumn: string,
+  dispatch: Function
+) {
+  const dragIndex = item.index;
+  const sourceColumn = item.columnId;
+  dispatch({
+    type: "MOVE_TASK",
+    payload: { dragIndex, hoverIndex, sourceColumn, targetColumn },
+  });
+  item.index = hoverIndex;
+  item.columnId = targetColumn;
+}
+
+export const useItemDrop = (
+  index: number,
+  columnId: string,
+  type: TypeEnum
+) => {
   const { dispatch } = useAppState();
 
   const [, drop] = useDrop({
-    accept: ["COLUMN"],
+    accept: [TypeEnum.Column, TypeEnum.Card],
     hover(item: DragItem) {
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      console.log(dragIndex);
-      console.log(hoverIndex);
-
-      if (dragIndex === hoverIndex) {
-        return;
+      const hoverIndex = index.toString() === columnId ? 0 : index;
+      if (item.type === TypeEnum.Column) {
+        dispatchForColumn(item, hoverIndex, dispatch);
+      } else {
+        dispatchForCard(
+          item,
+          type === TypeEnum.Card ? hoverIndex : 0,
+          columnId,
+          dispatch
+        );
       }
 
-      dispatch({ type: "MOVE_LIST", payload: { dragIndex, hoverIndex } });
       item.index = hoverIndex;
     },
   });
